@@ -85,9 +85,9 @@
       integer, dimension(im), intent(in) :: soiltyp, vegtype, slopetyp
 
       real (kind=kind_phys), dimension(im), intent(in) :: ps, u1, v1,   &
-     &       t1, q1, sigmaf, sfcemis, dlwflx, dswsfc, snet, tg3, cm,    &
+     &       t1, q1, sigmaf, dlwflx, dswsfc, snet, tg3, cm,             &
      &       ch, prsl1, prslki, wind, shdmin, shdmax,                   &
-     &       snoalb, sfalb, zf,                                         &
+     &       snoalb, zf,                                                &
      &       rainn_mp,rainc_mp,snow_mp,graupel_mp,ice_mp
 
       logical, dimension(im), intent(in) :: dry
@@ -107,7 +107,8 @@
 
 !  ---  in/out:
       real (kind=kind_phys), dimension(im), intent(inout) :: weasd,     &
-     &       snwdph, tskin, tprcp, srflag, canopy, trans, tsurf,zorl
+     &       snwdph, tskin, tprcp, srflag, canopy, trans, tsurf,zorl,   &
+     &       sfcemis, sfalb
 
       real (kind=kind_phys), dimension(im,km), intent(inout) ::         &
      &       smc, stc, slc
@@ -788,6 +789,8 @@
 !         write(*,*) 'snowc',fsno
 
           tsurf(i)   = trad
+	  sfcemis(i) = emissi
+	  sfalb(i)   = albedo
 
           stm(i) = (0.1*smsoil(1)+0.3*smsoil(2)+0.6*smsoil(3)+           &
      &              1.0*smsoil(4))*1000.0  ! unit conversion from m to kg m-2
