@@ -790,7 +790,9 @@
 
           tsurf(i)   = trad
 	  sfcemis(i) = emissi
-	  sfalb(i)   = albedo
+	  if(albedo .gt. 0.0) then
+	    sfalb(i)   = albedo
+	  end if
 
           stm(i) = (0.1*smsoil(1)+0.3*smsoil(2)+0.6*smsoil(3)+           &
      &              1.0*smsoil(4))*1000.0  ! unit conversion from m to kg m-2
