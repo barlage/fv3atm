@@ -1921,11 +1921,14 @@ module module_physics_driver
             Sfcprop%fastcpxy, Sfcprop%xlaixy,  Sfcprop%xsaixy,                  &
             Sfcprop%taussxy,  Sfcprop%smoiseq, Sfcprop%smcwtdxy,                &
             Sfcprop%deeprechxy, Sfcprop%rechxy,                                 &
+            Sfcprop%albdvis, Sfcprop%albdnir,  Sfcprop%albivis,  Sfcprop%albinir,&
 !  ---  outputs:
             Sfcprop%sncovr, qss3(:,1), gflx3(:,1), drain, evap3(:,1),           &
             hflx3(:,1), ep1d3(:,1), runof,                                      &
             cmm3(:,1), chh3(:,1), evbs, evcw, sbsno, snowc, Diag%soilm,         &
             snohf, Diag%smcwlt2, Diag%smcref2, Diag%wet1, t2mmp, q2mp)
+
+            Radtend%semis = semis3(:,1)
 
 !     if (lprnt) write(0,*)' tseae=',tsea(ipr),' tsurf=',tsurf(ipr),iter &
 !    &,' phy_f2d=',phy_f2d(ipr,num_p2d)

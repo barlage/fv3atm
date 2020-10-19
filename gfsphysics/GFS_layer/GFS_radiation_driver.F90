@@ -1869,6 +1869,8 @@
                      tsfg, tsfa, Sfcprop%hprime(:,1), Sfcprop%alvsf, &
                      Sfcprop%alnsf, Sfcprop%alvwf, Sfcprop%alnwf,    &
                      Sfcprop%facsf, Sfcprop%facwf, Sfcprop%fice,     &
+                     Sfcprop%albdvis, Sfcprop%albdnir,               &
+		     Sfcprop%albivis, Sfcprop%albinir,               &
                      Sfcprop%tisfc, IM,                              &
                      alb1d, Model%pertalb,                           & !  mg, sfc-perts
                      sfcalb)                                           !  ---  outputs

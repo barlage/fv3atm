@@ -300,6 +300,7 @@ contains
                    runsrf  , runsub  , apar    , psn     , sav     , sag     , & ! out :
                    fsno    , nee     , gpp     , npp     , fveg    , albedo  , & ! out :
                    qsnbot  , ponding , ponding1, ponding2, rssun   , rssha   , & ! out :
+ 		   albd    , albi    ,                                         & ! out :
                    bgap    , wgap    , chv     , chb     , emissi  ,           & ! out :
 		   shg     , shc     , shb     , evg     , evb     , ghv     , & ! out :
 		   ghb     , irg     , irc     , irb     , tr      , evc     , & ! out :
@@ -428,6 +429,8 @@ contains
   real (kind=kind_phys), intent(out) :: rssha        !shaded leaf stomatal resistance (s/m)
   real (kind=kind_phys), intent(out) :: bgap
   real (kind=kind_phys), intent(out) :: wgap
+  real (kind=kind_phys), dimension(1:2)           , intent(out)   :: albd   ! albedo (direct)
+  real (kind=kind_phys), dimension(1:2)           , intent(out)   :: albi   ! albedo (diffuse)
   real (kind=kind_phys), intent(out) :: tgv
   real (kind=kind_phys), intent(out) :: tgb
   real (kind=kind_phys)              :: q1
@@ -647,7 +650,7 @@ contains
 !jref:start
                  qc     ,qsfc   ,psfc   , & !in 
                  t2mv   ,t2mb  ,fsrv   , &
-                 fsrg   ,rssun   ,rssha ,bgap   ,wgap, tgv,tgb,&
+                 fsrg   ,rssun   ,rssha ,albd  ,albi, bgap   ,wgap,tgv,tgb,&
                  q1     ,q2v    ,q2b    ,q2e    ,chv   ,chb     , & !out
                  emissi ,pah    ,                                 &
 		     shg,shc,shb,evg,evb,ghv,ghb,irg,irc,irb,tr,evc,chleaf,chuc,chv2,chb2 )                                            !out
@@ -1348,7 +1351,7 @@ contains
 !jref:start
                      qc     ,qsfc   ,psfc   , & !in 
                      t2mv   ,t2mb   ,fsrv   , &
-                     fsrg   ,rssun  ,rssha  ,bgap   ,wgap,tgv,tgb,&
+                     fsrg   ,rssun  ,rssha  ,albd  ,albi,bgap   ,wgap,tgv,tgb,&
                      q1     ,q2v    ,q2b    ,q2e    ,chv  ,chb, emissi,pah  ,&
 		     shg,shc,shb,evg,evb,ghv,ghb,irg,irc,irb,tr,evc,chleaf,chuc,chv2,chb2 )   !out 
 !jref:end                            
@@ -1487,6 +1490,8 @@ contains
   real (kind=kind_phys)                              , intent(out)   :: t2mb   !2-m air temperature over bare ground part [k]
   real (kind=kind_phys)                              , intent(out)   :: bgap
   real (kind=kind_phys)                              , intent(out)   :: wgap
+  real (kind=kind_phys), dimension(1:2)              , intent(out)   :: albd   !albedo (direct)
+  real (kind=kind_phys), dimension(1:2)              , intent(out)   :: albi   !albedo (diffuse)
 !jref:end
 
 ! input & output
@@ -1701,7 +1706,7 @@ contains
                    albold  ,tauss   ,                            & !inout
                    fsun    ,laisun  ,laisha  ,parsun  ,parsha  , & !out
                    sav     ,sag     ,fsr     ,fsa     ,fsrv    , & 
-                   fsrg    ,bgap    ,wgap    )            !out
+                   fsrg    ,albd    ,albi    ,bgap    ,wgap     )  !out
 
 ! vegetation and ground emissivity
 
@@ -2242,7 +2247,7 @@ contains
                         albold  ,tauss   ,                            & !inout
                         fsun    ,laisun  ,laisha  ,parsun  ,parsha  , & !out
                         sav     ,sag     ,fsr     ,fsa     ,fsrv    , &
-                        fsrg    ,bgap    ,wgap)            !out
+                        fsrg    ,albd    ,albi    ,bgap    ,wgap)       !out
 ! --------------------------------------------------------------------------------------------------
   implicit none
 ! --------------------------------------------------------------------------------------------------

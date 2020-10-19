@@ -23,6 +23,7 @@
      &      zwtxy, waxy, wtxy, tsnoxy,zsnsoxy,  snicexy,  snliqxy,      &
      &      lfmassxy, rtmassxy,stmassxy, woodxy, stblcpxy, fastcpxy,    &
      &      xlaixy,xsaixy,taussxy,smoiseq,smcwtdxy,deeprechxy,rechxy,   &
+     &      albdvis, albdnir,  albivis,  albinir,                       &
 
 !  ---  outputs:
      &       sncovr1, qsurf, gflux, drain, evap, hflx, ep, runoff,      &
@@ -137,6 +138,9 @@
      &    evbs, evcw, sbsno, snowc, stm, snohf, smcwlt2, smcref2,wet1,  &
      &    t2mmp,q2mp 
     
+      real (kind=kind_phys), dimension(im), intent(out) :: albdvis,     &
+     &    albdnir,  albivis,  albinir
+
 !  ---  locals:
       real (kind=kind_phys), dimension(im) :: rch, rho,                 &
      &       q0, qs1, theta1, tv1,  weasd_old, snwdph_old,              &
@@ -186,6 +190,8 @@
       real (kind=kind_phys), dimension( km ) :: smoiseqx
       real (kind=kind_phys), dimension(-2:4) :: zsnsox
       real (kind=kind_phys), dimension(-2:4) :: tsnsox
+      real (kind=kind_phys), dimension(1:2)  :: albd   ! albedo (direct)
+      real (kind=kind_phys), dimension(1:2)  :: albi   ! albedo (diffuse)
 
       real (kind=kind_phys) :: z0wrf,fsa,fsr,fira,fsh,fcev,fgev,        &
      &                         fctr,ecan,etran,trad,tgb,tgv,t2mv,       &
@@ -592,7 +598,7 @@
      &             fsa     ,fsr     ,fira    ,fsh     ,fgev  ,ssoil   , & ! out : 
      &             trad    ,edir    ,runsrf  ,runsub  ,sag   ,albedo  , & ! out : albedo is surface albedo
      &             qsnbot  ,ponding ,ponding1,ponding2,t2mb  ,q2b     , & ! out :
-     &             emissi  ,fpice   ,ch2b    ,esnow )
+     &             emissi  ,fpice   ,ch2b    ,esnow   ,albsnd, albsni)
 
 !
 ! in/out and outs
@@ -668,6 +674,7 @@
      &        runsrf  , runsub  , apar    , psn     , sav     , sag    ,& ! out :
      &        fsno    , nee     , gpp     , npp     , fveg    , albedo ,& ! out :
      &        qsnbot  , ponding , ponding1, ponding2, rssun   , rssha  ,& ! out :
+     &        albsnd  , albsni  ,                                       & ! out :
      &        bgap    , wgap    , chv     , chb     , emissi           ,& ! out :
      &        shg     , shc     , shb     , evg     , evb     , ghv    ,&! out :
      &        ghb     , irg     , irc     , irb     , tr      , evc    ,& ! out :
@@ -792,6 +799,10 @@
           sfcemis(i) = emissi
           if(albedo .gt. 0.0) then
             sfalb(i)   = albedo
+	    albdvis(i) = albd(1)
+	    albdnir(i) = albd(2)
+	    albivis(i) = albi(1)
+	    albinir(i) = albi(2)
           end if
 
           stm(i) = (0.1*smsoil(1)+0.3*smsoil(2)+0.6*smsoil(3)+           &

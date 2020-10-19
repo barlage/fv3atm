@@ -1142,6 +1142,34 @@
   dimensions = (horizontal_dimension)
   type = real
   kind = kind_phys
+[albdvis]
+  standard_name = surface_albedo_direct_visible
+  long_name = direct surface albedo visible band
+  units = frac
+  dimensions = (horizontal_dimension)
+  type = real
+  kind = kind_phys
+[albdnir]
+  standard_name = surface_albedo_direct_NIR
+  long_name = direct surface albedo NIR band
+  units = frac
+  dimensions = (horizontal_dimension)
+  type = real
+  kind = kind_phys
+[albivis]
+  standard_name = surface_albedo_diffuse_visible
+  long_name = diffuse surface albedo visible band
+  units = frac
+  dimensions = (horizontal_dimension)
+  type = real
+  kind = kind_phys
+[albinir]
+  standard_name = surface_albedo_diffuse_NIR
+  long_name = diffuse surface albedo NIR band
+  units = frac
+  dimensions = (horizontal_dimension)
+  type = real
+  kind = kind_phys
 [wetness]
   standard_name = normalized_soil_wetness_for_land_surface_model
   long_name = normalized soil wetness for lsm

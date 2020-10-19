@@ -382,7 +382,11 @@ module FV3GFS_io_mod
         temp2d(i,j,idx_opt+46) = IPD_Data(nb)%Sfcprop%zsnsoxy(ix,2)
         temp2d(i,j,idx_opt+47) = IPD_Data(nb)%Sfcprop%zsnsoxy(ix,3)
         temp2d(i,j,idx_opt+48) = IPD_Data(nb)%Sfcprop%zsnsoxy(ix,4)
-        idx_opt = 136
+        temp2d(i,j,idx_opt+49) = IPD_Data(nb)%Sfcprop%albdvis(ix)
+        temp2d(i,j,idx_opt+50) = IPD_Data(nb)%Sfcprop%albdnir(ix)
+        temp2d(i,j,idx_opt+51) = IPD_Data(nb)%Sfcprop%albivis(ix)
+        temp2d(i,j,idx_opt+52) = IPD_Data(nb)%Sfcprop%albinir(ix)
+        idx_opt = 140
        endif
 
        if (Model%nstf_name(1) > 0) then
@@ -548,7 +552,7 @@ module FV3GFS_io_mod
 #endif
 
     if (Model%lsm == Model%lsm_noahmp) then
-      nvar_s2mp = 29       !mp 2D
+      nvar_s2mp = 33       !mp 2D
       nvar_s3mp = 5        !mp 3D
     else
       nvar_s2mp = 0        !mp 2D
@@ -830,7 +834,7 @@ module FV3GFS_io_mod
       sfc_name2(nvar_s2m+17) = 'dt_cool'
       sfc_name2(nvar_s2m+18) = 'qrain'
 !
-! Only needed when Noah MP LSM is used - 29 2D
+! Only needed when Noah MP LSM is used - 33 2D
 !
       if (Model%lsm == Model%lsm_noahmp) then
         sfc_name2(nvar_s2m+19) = 'snowxy'
@@ -862,6 +866,10 @@ module FV3GFS_io_mod
         sfc_name2(nvar_s2m+45) = 'smcwtdxy'
         sfc_name2(nvar_s2m+46) = 'deeprechxy'
         sfc_name2(nvar_s2m+47) = 'rechxy'
+        sfc_name2(nvar_s2m+48) = 'albdvis'
+        sfc_name2(nvar_s2m+49) = 'albdnir'
+        sfc_name2(nvar_s2m+50) = 'albivis'
+        sfc_name2(nvar_s2m+51) = 'albinir'
 #ifdef CCPP
       else if (Model%lsm == Model%lsm_ruc .and. warm_start) then
         sfc_name2(nvar_s2m+19) = 'wetness'
@@ -1182,6 +1190,10 @@ module FV3GFS_io_mod
           Sfcprop(nb)%smcwtdxy(ix)   = sfc_var2(i,j,nvar_s2m+45)
           Sfcprop(nb)%deeprechxy(ix) = sfc_var2(i,j,nvar_s2m+46)
           Sfcprop(nb)%rechxy(ix)     = sfc_var2(i,j,nvar_s2m+47)
+          Sfcprop(nb)%albdvis(ix)    = sfc_var2(i,j,nvar_s2m+48)
+          Sfcprop(nb)%albdnir(ix)    = sfc_var2(i,j,nvar_s2m+49)
+          Sfcprop(nb)%albivis(ix)    = sfc_var2(i,j,nvar_s2m+50)
+          Sfcprop(nb)%albinir(ix)    = sfc_var2(i,j,nvar_s2m+51)
         endif
 
 #ifdef CCPP
@@ -1466,7 +1478,11 @@ module FV3GFS_io_mod
 ! already set to 0.0
               Sfcprop(nb)%wslakexy     = 0.0
               Sfcprop(nb)%taussxy      = 0.0
-
+	      
+              Sfcprop(nb)%albdvis      = 0.2
+              Sfcprop(nb)%albdnir      = 0.2
+              Sfcprop(nb)%albivis      = 0.2
+              Sfcprop(nb)%albinir      = 0.2
 
               Sfcprop(nb)%waxy(ix)     = 4900.0
               Sfcprop(nb)%wtxy(ix)     = Sfcprop(nb)%waxy(ix)
@@ -1885,6 +1901,10 @@ module FV3GFS_io_mod
         sfc_name2(nvar2m+45) = 'smcwtdxy'
         sfc_name2(nvar2m+46) = 'deeprechxy'
         sfc_name2(nvar2m+47) = 'rechxy'
+        sfc_name2(nvar2m+48) = 'albdvis'
+        sfc_name2(nvar2m+49) = 'albdnir'
+        sfc_name2(nvar2m+50) = 'albivis'
+        sfc_name2(nvar2m+51) = 'albinir'
       endif
  
     !--- register the 2D fields
@@ -2112,6 +2132,10 @@ module FV3GFS_io_mod
           sfc_var2(i,j,nvar2m+45) = Sfcprop(nb)%smcwtdxy(ix)
           sfc_var2(i,j,nvar2m+46) = Sfcprop(nb)%deeprechxy(ix)
           sfc_var2(i,j,nvar2m+47) = Sfcprop(nb)%rechxy(ix)
+          sfc_var2(i,j,nvar2m+48) = Sfcprop(nb)%albdvis(ix)
+          sfc_var2(i,j,nvar2m+49) = Sfcprop(nb)%albdnir(ix)
+          sfc_var2(i,j,nvar2m+50) = Sfcprop(nb)%albivis(ix)
+          sfc_var2(i,j,nvar2m+51) = Sfcprop(nb)%albinir(ix)
         endif
 
 #ifdef CCPP

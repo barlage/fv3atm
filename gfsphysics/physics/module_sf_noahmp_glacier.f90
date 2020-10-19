@@ -159,7 +159,7 @@ contains
                    fsa     ,fsr     ,fira    ,fsh     ,fgev    ,ssoil   , & ! out : 
                    trad    ,edir    ,runsrf  ,runsub  ,sag     ,albedo  , & ! out :
                    qsnbot  ,ponding ,ponding1,ponding2,t2m     ,q2e     , & ! out :
-                   emissi,  fpice   ,ch2b    , esnow) 
+                   emissi,  fpice   ,ch2b    , esnow  ,albsnd  ,albsni) 
 
 ! --------------------------------------------------------------------------------------------------
 ! initial code: guo-yue niu, oct. 2007
@@ -232,6 +232,8 @@ contains
   real (kind=kind_phys)                           , intent(out)   :: fpice
   real (kind=kind_phys)                           , intent(out)   :: ch2b
   real (kind=kind_phys)                           , intent(out)   :: esnow
+  real (kind=kind_phys), dimension(1:2)           , intent(out)   :: albsnd !snow albedo (direct)
+  real (kind=kind_phys), dimension(1:2)           , intent(out)   :: albsni !snow albedo (diffuse)
 
 ! local
   integer                                        :: iz     !do-loop index
@@ -286,7 +288,8 @@ contains
                          tauss  ,qsfc   ,                                 & !inout
                          imelt  ,snicev ,snliqv ,epore  ,qmelt  ,ponding, & !out
 		         sag    ,fsa    ,fsr    ,fira   ,fsh    ,fgev   , & !out
-		         trad   ,t2m    ,ssoil  ,lathea ,q2e    ,emissi, ch2b )   !out
+                         trad   ,t2m    ,ssoil  ,lathea ,q2e    ,emissi , &
+			 ch2b   ,albsnd ,albsni                         )   !out
 
     sice = max(0.0, smc - sh2o)   
     sneqvo  = sneqv
@@ -391,7 +394,8 @@ contains
                              tauss  ,qsfc   ,                                 & !inout
                              imelt  ,snicev ,snliqv ,epore  ,qmelt  ,ponding, & !out
                              sag    ,fsa    ,fsr    ,fira   ,fsh    ,fgev   , & !out
-                             trad   ,t2m    ,ssoil  ,lathea ,q2e    ,emissi, ch2b )   !out
+                             trad   ,t2m    ,ssoil  ,lathea ,q2e    ,emissi , &
+			     ch2b   ,albsnd ,albsni                         )   !out
 
 ! --------------------------------------------------------------------------------------------------
 ! --------------------------------------------------------------------------------------------------
@@ -459,6 +463,8 @@ contains
   real (kind=kind_phys)                              , intent(out)   :: q2e
   real (kind=kind_phys)                              , intent(out)   :: emissi
   real (kind=kind_phys)                              , intent(out)   :: ch2b   !sensible heat conductance, canopy air to zlvl air (m/s)
+  real (kind=kind_phys), dimension(1:2)              , intent(out)   :: albsnd !snow albedo (direct)
+  real (kind=kind_phys), dimension(1:2)              , intent(out)   :: albsni !snow albedo (diffuse)
 
 
 ! local
@@ -500,7 +506,7 @@ contains
   call  radiation_glacier (dt      ,tg      ,sneqvo  ,sneqv   ,cosz    , & !in
                            qsnow   ,solad   ,solai   ,                   & !in
                            albold  ,tauss   ,                            & !inout
-                           sag     ,fsr     ,fsa)                          !out
+                           sag     ,fsr     ,fsa     , albsnd ,albsni)     !out
 
 ! vegetation and ground emissivity
 
@@ -696,7 +702,7 @@ contains
   subroutine radiation_glacier (dt      ,tg      ,sneqvo  ,sneqv   ,cosz    , & !in
                                 qsnow   ,solad   ,solai   ,                   & !in
                                 albold  ,tauss   ,                            & !inout
-                                sag     ,fsr     ,fsa)                          !out
+                                sag     ,fsr     ,fsa     , albsnd ,albsni)     !out
 ! --------------------------------------------------------------------------------------------------
   implicit none
 ! --------------------------------------------------------------------------------------------------
@@ -723,8 +729,8 @@ contains
   integer                              :: ib     !number of radiation bands
   integer                              :: nband  !number of radiation bands
   real (kind=kind_phys)                                 :: fage   !snow age function (0 - new snow)
-  real (kind=kind_phys), dimension(1:2)                 :: albsnd !snow albedo (direct)
-  real (kind=kind_phys), dimension(1:2)                 :: albsni !snow albedo (diffuse)
+  real (kind=kind_phys), dimension(1:2)   , intent(out) :: albsnd !snow albedo (direct)
+  real (kind=kind_phys), dimension(1:2)   , intent(out) :: albsni !snow albedo (diffuse)
   real (kind=kind_phys)                                 :: alb    !current class albedo
   real (kind=kind_phys)                                 :: abs    !temporary absorbed rad
   real (kind=kind_phys)                                 :: ref    !temporary reflected rad
