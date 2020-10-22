@@ -1892,7 +1892,7 @@ module module_physics_driver
 !  ---  inputs:
            (im, lsoil,kdt, Statein%pgr,  Statein%ugrs, Statein%vgrs,   &
             Statein%tgrs,  Statein%qgrs, soiltyp, vegtype, sigmaf,     &
-            semis3(:,1),   gabsbdlw3(:,1), adjsfcdsw, adjsfcnsw, dtf,  &
+            semis3(:,1),   adjsfcdlw,    adjsfcdsw, adjsfcnsw, dtf,    &
 !           Radtend%semis, gabsbdlw,     adjsfcdsw,  adjsfcnsw, dtf,   &
             Sfcprop%tg3, cd3(:,1), cdq3(:,1), Statein%prsl(:,1), work3,&
             Diag%zlvl, dry,   wind, slopetyp,                          &
