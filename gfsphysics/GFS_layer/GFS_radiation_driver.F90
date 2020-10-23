@@ -1994,7 +1994,8 @@
 
         call setemis (Grid%xlon, Grid%xlat, Sfcprop%slmsk,         &        !  ---  inputs
                       Sfcprop%snowd, Sfcprop%sncovr, Sfcprop%zorl, &
-                      tsfg, tsfa, Sfcprop%hprime(:,1), IM,         &
+                      tsfg, tsfa, Sfcprop%hprime(:,1),             &
+                      Sfcprop%emiss, IM,                           &
                       Radtend%semis)                                        !  ---  outputs
 !*## CCPP ##
 

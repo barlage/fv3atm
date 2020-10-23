@@ -1892,7 +1892,7 @@ module module_physics_driver
 !  ---  inputs:
            (im, lsoil,kdt, Statein%pgr,  Statein%ugrs, Statein%vgrs,   &
             Statein%tgrs,  Statein%qgrs, soiltyp, vegtype, sigmaf,     &
-            semis3(:,1),   adjsfcdlw,    adjsfcdsw, adjsfcnsw, dtf,    &
+            Sfcprop%emiss,   adjsfcdlw,    adjsfcdsw, adjsfcnsw, dtf,  &
 !           Radtend%semis, gabsbdlw,     adjsfcdsw,  adjsfcnsw, dtf,   &
             Sfcprop%tg3, cd3(:,1), cdq3(:,1), Statein%prsl(:,1), work3,&
             Diag%zlvl, dry,   wind, slopetyp,                          &
@@ -1927,8 +1927,6 @@ module module_physics_driver
             hflx3(:,1), ep1d3(:,1), runof,                                      &
             cmm3(:,1), chh3(:,1), evbs, evcw, sbsno, snowc, Diag%soilm,         &
             snohf, Diag%smcwlt2, Diag%smcref2, Diag%wet1, t2mmp, q2mp)
-
-            Radtend%semis = semis3(:,1)
 
 !     if (lprnt) write(0,*)' tseae=',tsea(ipr),' tsurf=',tsurf(ipr),iter &
 !    &,' phy_f2d=',phy_f2d(ipr,num_p2d)

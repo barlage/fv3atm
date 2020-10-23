@@ -725,10 +725,10 @@
             asenb = asend
          endif
 
-         sfcalb(i,1) = lsmalbdnir*flnd + asenb*fsea + asnnb*fsno
-         sfcalb(i,2) = lsmalbinir*flnd + asend*fsea + asnnd*fsno
-         sfcalb(i,3) = lsmalbdvis*flnd + asevb*fsea + asnvb*fsno
-         sfcalb(i,4) = lsmalbivis*flnd + asevd*fsea + asnvd*fsno
+         sfcalb(i,1) = lsmalbdnir(i)*flnd + asenb*fsea + asnnb*fsno
+         sfcalb(i,2) = lsmalbinir(i)*flnd + asend*fsea + asnnd*fsno
+         sfcalb(i,3) = lsmalbdvis(i)*flnd + asevb*fsea + asnvb*fsno
+         sfcalb(i,4) = lsmalbivis(i)*flnd + asevd*fsea + asnvd*fsno
 
         enddo    ! end_do_i_loop
 
@@ -781,6 +781,7 @@
 !-----------------------------------
       subroutine setemis                                                &
      &     ( xlon,xlat,slmsk,snowf,sncovr,zorlf,tsknf,tairf,hprif,      &  !  ---  inputs:
+     &       lsmemiss,                                                  &
      &       IMAX,                                                      &
      &       sfcemis                                                    &  !  ---  outputs:
      &     )
@@ -807,6 +808,7 @@
 !     tsknf (IMAX)  - ground surface temperature in k                   !
 !     tairf (IMAX)  - lowest model layer air temperature in k           !
 !     hprif (IMAX)  - topographic sdv in m                              !
+!     lsmemiss(IMAX)- emissivity from lsm                               !
 !     IMAX          - array horizontal dimension                        !
 !                                                                       !
 !  outputs:                                                             !
@@ -830,7 +832,8 @@
       integer, intent(in) :: IMAX
 
       real (kind=kind_phys), dimension(:), intent(in) ::                & 
-     &       xlon,xlat, slmsk, snowf,sncovr, zorlf, tsknf, tairf, hprif
+     &       xlon,xlat, slmsk, snowf,sncovr, zorlf, tsknf, tairf, hprif,&
+     &       lsmemiss
 
 !  ---  outputs
       real (kind=kind_phys), dimension(:), intent(out) :: sfcemis
@@ -952,7 +955,7 @@
 
           else                                     ! land
 
-            ! don't do anything for land, it was replaced in the land driver
+            sfcemis(i) = lsmemiss(i)
 
           endif   ! end if_slmsk_block
 
