@@ -193,8 +193,8 @@
      &       bexppert, xlaipert, vegfpert
 
       real (kind=kind_phys), dimension(im), intent(in) ::               &
-     &       rainnc_in, rainc_in, snow_in,                              &
-     &       graupel_in, ice_in                                         &
+     &       rainnc_mp, rainc_mp, snow_mp,                              &
+     &       graupel_mp, ice_mp                                         &
 
       real (kind=kind_phys),  intent(in) :: delt
 
