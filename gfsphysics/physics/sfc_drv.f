@@ -339,16 +339,16 @@
           frozen_prcp = snow_prcp + graupel_prcp + ice_prcp
           ffrozp = frozen_prcp / rainnc_prcp
           liquid_prcp = rainnc_prcp - frozen_prcp +                     &
-                           (1.0 - ffrozp) * rainc_prcp
+     &                 (1.0 - ffrozp) * rainc_prcp
 
 !      distribute convective precip same as MP precip
           if(frozen_prcp > 0 .and. rainc_prcp > 0) then
             snow_prcp    = snow_prcp    +                               &
-                          snow_prcp / frozen_prcp * rainc_prcp
+     &                    snow_prcp / frozen_prcp * rainc_prcp
             graupel_prcp = graupel_prcp +                               &
-                          graupel_prcp / frozen_prcp * rainc_prcp
+     &                    graupel_prcp / frozen_prcp * rainc_prcp
             ice_prcp     = ice_prcp   +                                 &
-                          ice_prcp / frozen_prcp * rainc_prcp
+     &                    ice_prcp / frozen_prcp * rainc_prcp
           end if
 
           ice = 0
