@@ -1822,8 +1822,7 @@ module module_physics_driver
             Radtend%sfalb, flag_iter, flag_guess, Model%lheatstrg,       &
             Model%isot, Model%ivegsrc,                                   &
             bexp1d, xlai1d, vegf1d, Model%pertvegf,                      &
-            Sfcprop%drainncprv, Sfcprop%draincprv, Sfcprop%dsnowprv,   &
-            Sfcprop%dgraupelprv, Sfcprop%diceprv,                      &
+            Sfcprop%dgraupelprv, Sfcprop%diceprv,                        &
 !  ---  input/output:
             weasd3(:,1), snowd3(:,1), tsfc3(:,1), tprcp3(:,1),           &
             Sfcprop%srflag, smsoil, stsoil, slsoil, Sfcprop%canopy,      &

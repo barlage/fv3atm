@@ -8,7 +8,7 @@
      &       vegtyp, soiltyp, slopetyp, shdmin, alb, snoalb,            &
      &       bexpp, xlaip,                                              & !  sfc-perts, mgehne
      &       lheatstrg,                                                 &
-     &       liquid_prcp, snow_prcp, graupel_prcp, ice_prcp,            &
+     &       graupel_prcp, ice_prcp,                                    &
 !  ---  input/outputs:
      &       tbot, cmc, t1, stc, smc, sh2o, sneqv, ch, cm,z0,           &
 !  ---  outputs:
@@ -207,12 +207,11 @@
 
       logical, intent(in) :: lheatstrg
 
-      real (kind=kind_phys), intent(in) :: snow_prcp, graupel_prcp,     &
-     &                                      liquid_prcp
+      real (kind=kind_phys), intent(in) :: ice_prcp, graupel_prcp
 
 !  ---  input/outputs:
       real (kind=kind_phys), intent(inout) :: tbot, cmc, t1, sneqv,     &
-     &       stc(nsoil), smc(nsoil), sh2o(nsoil), ch, cm,ice_prcp
+     &       stc(nsoil), smc(nsoil), sh2o(nsoil), ch, cm
 
 !  ---  outputs:
       integer, intent(out) :: nroot
@@ -234,6 +233,8 @@
      &       t1v, t24, t2v, th2v, topt, tsnow, zbot, z0
       
       real (kind=kind_phys) ::  shdfac0
+
+      real (kind=kind_phys) ::  total_ice_precip
       real (kind=kind_phys), dimension(nsold) :: rtdis, zsoil
 
       logical :: frzgra, snowng
@@ -412,10 +413,13 @@
 !           temp is colder than 0 c, freezing rain is presumed to be falling.
 
       if (prcp > 0.0) then
+        prcp1 = prcp
         if (ffrozp > 0.) then
           snowng = .true.
+          prcp1 = max(0.0, prcp * (1.0 - ffrozp))  ! liquid precip
+          sn_new = max(0.0, prcp * ffrozp - graupel_prcp - ice_prcp) ! [mm/s]
         endif
-        if (liquid_prcp > 0 .and. t1 <= tfreez) then 
+        if (prcp1 > 0 .and. t1 <= tfreez) then 
           frzgra = .true.
         endif
       endif
@@ -428,16 +432,13 @@
 
       if (snowng .or. frzgra) then
 
-!   snowfall
-       sneqv = sneqv + snow_prcp  * dt * 0.001   ! [m]
-       sneqv = sneqv + graupel_prcp  * dt * 0.001   ! [m]
-       sneqv = sneqv + ice_prcp * dt * 0.001   ! [m]
-       prcp1 = liquid_prcp
+!   snowfall + graupel + MP ice
+       sneqv = sneqv + prcp * ffrozp * dt * 0.001   ! [m]
 
 !    freezing rain
        if (frzgra) then
-        sneqv = sneqv + liquid_prcp
-        ice_prcp = ice_prcp + liquid_prcp
+        sneqv = sneqv + prcp1 * dt * 0.001   ! [m]
+        total_ice_precip = ice_prcp + prcp1  ! [mm/s]
         prcp1 = 0.0
        endif
 
@@ -2719,10 +2720,10 @@
 !
 !  --- ...  conversion into simulation units
 
-      snowhc = snowh * 100.0
-      newsnc = snow_prcp * dt * 0.001 * 100.0    
-      newgrc = graupel_prcp * dt * 0.001 * 100.0 
-      newicc = ice_prcp * dt * 0.001 * 100.0    
+      snowhc = snowh * 100.0                          ! [cm]
+      newsnc = sn_new * dt * 0.001 * 100.0            ! [cm]
+      newgrc = graupel_prcp * dt * 0.001 * 100.0      ! [cm]
+      newicc = total_ice_precip * dt * 0.001 * 100.0  ! [cm] 
       tempc  = sfctmp - tfreez
 
 !  --- ...  calculating new snowfall density depending on temperature
@@ -2735,16 +2736,17 @@
       else
         dsnew = 0.05 + 0.0017*(tempc + 15.0)**1.5
       endif
-      dgnew = min(500.,1000.0/max(2.,(3.5*tanh((1.0-tempc)*0.3333))))
-      dgnew = dgnew / 1000.0   ! convert units [m-liq/m-snow]
-      dinew = 500.0 / 1000.0
+      dgnew = 1000.0 / max(2.,(3.5*tanh((274.15-sfctmp)*0.3333)))
+      dgnew = min(500.0, dgnew) ! kg/m3 (from RUC model)
+      dgnew = dgnew / 1000.0    ! convert units to [m-liq/m-snow]
+      dinew = 500.0 / 1000.0    ! assume ice is 500 kg/m3
       
-      dsnew = (dsnew*snow_prcp + dgnew*graupel_prcp + dinew*ice_prcp) / &
-     &        (snow_prcp + graupel_prcp + ice_prcp)
+      dsnew = (dsnew*newsnc + dgnew*newgrc + dinew*newicc) / &
+     &        (newsnc + newgrc + newicc)
 
 !  --- ...  adjustment of snow density depending on new snowfall
 
-      hnewc  = newsnc / dsnew
+      hnewc  = (newsnc + newgrc + newicc) / dsnew
       sndens = (snowhc*sndens + hnewc*dsnew) / (snowhc + hnewc)
       snowhc = snowhc + hnewc
       snowh  = snowhc * 0.01
