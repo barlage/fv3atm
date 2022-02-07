@@ -8,7 +8,7 @@
      &       vegtyp, soiltyp, slopetyp, shdmin, alb, snoalb,            &
      &       bexpp, xlaip,                                              & !  sfc-perts, mgehne
      &       lheatstrg,                                                 &
-     &       liquid_precip, snow_1d, graupel_1d, ice_1d,                &
+     &       liquid_prcp, snow_prcp, graupel_prcp, ice_prcp,            &
 !  ---  input/outputs:
      &       tbot, cmc, t1, stc, smc, sh2o, sneqv, ch, cm,z0,           &
 !  ---  outputs:
@@ -207,7 +207,8 @@
 
       logical, intent(in) :: lheatstrg
 
-      real (kind=kind_phys) :: snow_1d,graupel_1d,ice_1d,liquid_precip
+      real (kind=kind_phys), intent(in) :: snow_prcp, graupel_prcp,     &
+     &                                      ice_prcp,  liquid_prcp
 
 !  ---  input/outputs:
       real (kind=kind_phys), intent(inout) :: tbot, cmc, t1, sneqv,     &
@@ -414,7 +415,7 @@
         if (ffrozp > 0.) then
           snowng = .true.
         endif
-        if (t1 <= tfreez) 
+        if (liquid_prcp > 0 .and. t1 <= tfreez) 
           frzgra = .true.
         endif
       endif
@@ -428,13 +429,15 @@
       if (snowng .or. frzgra) then
 
 !   snowfall
-       sn_new = snow_1d * dt * 0.001
-       sneqv = sneqv + snow_1d + graupel_1d + ice_1d
-       prcp1 = (1.-ffrozp)*prcp
+       sneqv = sneqv + snow_prcp  * dt * 0.001   ! [m]
+       sneqv = sneqv + graupel_prcp  * dt * 0.001   ! [m]
+       sneqv = sneqv + ice_prcp * dt * 0.001   ! [m]
+       prcp1 = liquid_prcp
+
 !    freezing rain
        if (frzgra) then
         sneqv = sneqv + liquid_precip
-        ice_1d = ice_1d + liquid_precip
+        ice_prcp = ice_prcp + liquid_precip
         prcp1 = 0.0
        endif
 
@@ -2709,7 +2712,7 @@
 
 !  ---  locals:
       real(kind=kind_phys) :: dsnew, snowhc, hnewc, newsnc, tempc
-      real(kind=kind_phys) :: dgnew, dinew
+      real(kind=kind_phys) :: dgnew, newgrc, dinew, newicc
 
 !
 !===> ...  begin here
@@ -2717,7 +2720,9 @@
 !  --- ...  conversion into simulation units
 
       snowhc = snowh * 100.0
-      newsnc = sn_new * 100.0
+      newsnc = snow_prcp * dt * 0.001 * 100.0     [cm]
+      newgrc = graupel_prcp * dt * 0.001 * 100.0  [cm]
+      newicc = ice_prcp * dt * 0.001 * 100.0      [cm]
       tempc  = sfctmp - tfreez
 
 !  --- ...  calculating new snowfall density depending on temperature
@@ -2731,11 +2736,11 @@
         dsnew = 0.05 + 0.0017*(tempc + 15.0)**1.5
       endif
       dgnew = min(500.,1000.0/max(2.,(3.5*tanh((1.0-tempc)*0.3333))))
-      dgnew = dgnew / 100.0   ! convert units
-      dinew = dgnew
+      dgnew = dgnew / 1000.0   ! convert units [m-liq/m-snow]
+      dinew = 500.0 / 1000.0
       
-      dsnew = (dsnew*snow_1d + dgnew*graupel_1d + dinew*ice_1d) /      &
-              (snow_1d + graupel_1d + ice_1d)
+      dsnew = (dsnew*snow_prcp + dgnew*graupel_prcp + dinew*ice_prcp) / &
+              (snow_prcp + graupel_prcp + ice_prcp)
 
 !  --- ...  adjustment of snow density depending on new snowfall
 

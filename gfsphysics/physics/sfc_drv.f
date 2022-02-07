@@ -237,8 +237,8 @@
      &       xlai, zlvl, swdn, tem, z0, bexpp, xlaip, vegfp,            &
      &       mv,sv,alphav,betav,vegftmp
 
-      real (kind=kind_phys) :: rainnc_1d, rainc_1d, snow_1d,            &                           &
-     &       graupel_1d, ice_1d, liquid_precip                          &
+      real (kind=kind_phys) :: rainnc_prcp, rainc_prcp, snow_prcp,      &                           &
+     &       graupel_prcp, ice_prcp, liquid_prcp, frozen_prcp
 
       integer :: couple, ice, nsoil, nroot, slope, stype, vtype
       integer :: i, k, iflag
@@ -330,15 +330,26 @@
 !          endif
           ffrozp = srflag(i)
 
-          rainnc_1d   = rainnc_mp(i)
-          rainc_1d    = rainc_mp(i)
-          snow_1d     = snow_mp(i)
-          graupel_1d  = graupel_mp(i)
-          ice_1d      = ice_mp(i)
-          ffrozp = (snow_1d + graupel_1d + ice_1d) / 
-                     (rainnc_1d + snow_1d + graupel_1d + ice_1d)
-          liquid_precip = rainnc_1d + (1.0 - ffrozp) * rainc_1d
-          snow_1d = snow_1d + ffrozp * rainc_1d
+          rainnc_prcp   = rainnc_mp(i)    ! all MP precip [mm/s]
+          rainc_prcp    = rainc_mp(i)     ! all convective precip [mm/s]
+          snow_prcp     = snow_mp(i)      ! snow part of MP precip [mm/s]
+          graupel_prcp  = graupel_mp(i)   ! grpl part of MP precip [mm/s]
+          ice_prcp      = ice_mp(i)       ! ice part of MP precip [mm/s]
+
+          frozen_prcp = snow_prcp + graupel_prcp + ice_prcp
+          ffrozp = frozen_prcp / rainnc_prcp
+          liquid_prcp = rainnc_prcp - frozen_prcp +                     &
+                           (1.0 - ffrozp) * rainc_prcp
+
+!      distribute convective precip same as MP precip
+          if(frozen_prcp > 0 .and. rainc_prcp > 0) then
+            snow_prcp    = snow_prcp    +                               &
+                          snow_prcp / frozen_prcp * rainc_prcp
+            graupel_prcp = graupel_prcp +                               &
+                          graupel_prcp / frozen_prcp * rainc_prcp
+            ice_prcp     = ice_prcp   +                                 &
+                          ice_prcp / frozen_prcp * rainc_prcp
+          end if
 
           ice = 0
 
@@ -471,7 +482,7 @@
      &       vtype, stype, slope, shdmin1d, alb, snoalb1d,              &
      &       bexpp, xlaip,                                              & ! sfc-perts, mgehne
      &       lheatstrg,                                                 &
-     &       liquid_precip, snow_1d, graupel_1d, ice_1d,                &
+     &       liquid_prcp, snow_prcp, graupel_prcp, ice_prcp,            &
 !  ---  input/outputs:
      &       tbot, cmc, tsea, stsoil, smsoil, slsoil, sneqv, chx, cmx,  &
      &       z0,                                                        &

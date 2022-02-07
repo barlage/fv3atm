@@ -5268,7 +5268,7 @@ module module_physics_driver
           Sfcprop%dgraupelprv(:) = 0.0
           Sfcprop%diceprv(:)     = 0.0
         endif
-      end if !  if (Model%lsm == Model%lsm_noahmp)
+      end if !  if (Model%lsm == Model%lsm_noahmp .or. Model%lsm==Model%lsm_noah)
       
       if (Model%cal_pre) then       ! hchuang: add dominant precipitation type algorithm
 !
