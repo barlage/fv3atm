@@ -8,6 +8,7 @@
      &       vegtyp, soiltyp, slopetyp, shdmin, alb, snoalb,            &
      &       bexpp, xlaip,                                              & !  sfc-perts, mgehne
      &       lheatstrg,                                                 &
+     &       liquid_precip, snow_1d, graupel_1d, ice_1d,                &
 !  ---  input/outputs:
      &       tbot, cmc, t1, stc, smc, sh2o, sneqv, ch, cm,z0,           &
 !  ---  outputs:
@@ -205,6 +206,8 @@
      &       bexpp, xlaip                                               & !sfc-perts, mgehne
 
       logical, intent(in) :: lheatstrg
+
+      real (kind=kind_phys) :: snow_1d,graupel_1d,ice_1d,liquid_precip
 
 !  ---  input/outputs:
       real (kind=kind_phys), intent(inout) :: tbot, cmc, t1, sneqv,     &
@@ -410,8 +413,9 @@
       if (prcp > 0.0) then
         if (ffrozp > 0.) then
           snowng = .true.
-        else
-          if (t1 <= tfreez) frzgra = .true.
+        endif
+        if (t1 <= tfreez) 
+          frzgra = .true.
         endif
       endif
 
@@ -424,15 +428,13 @@
       if (snowng .or. frzgra) then
 
 !   snowfall
-       if (snowng) then
-        sn_new = ffrozp*prcp * dt * 0.001
-        sneqv = sneqv + sn_new
-        prcp1 = (1.-ffrozp)*prcp
-       endif
+       sn_new = snow_1d * dt * 0.001
+       sneqv = sneqv + snow_1d + graupel_1d + ice_1d
+       prcp1 = (1.-ffrozp)*prcp
 !    freezing rain
        if (frzgra) then
-        sn_new = prcp * dt * 0.001
-        sneqv = sneqv + sn_new
+        sneqv = sneqv + liquid_precip
+        ice_1d = ice_1d + liquid_precip
         prcp1 = 0.0
        endif
 
@@ -2707,6 +2709,7 @@
 
 !  ---  locals:
       real(kind=kind_phys) :: dsnew, snowhc, hnewc, newsnc, tempc
+      real(kind=kind_phys) :: dgnew, dinew
 
 !
 !===> ...  begin here
@@ -2727,6 +2730,12 @@
       else
         dsnew = 0.05 + 0.0017*(tempc + 15.0)**1.5
       endif
+      dgnew = min(500.,1000.0/max(2.,(3.5*tanh((1.0-tempc)*0.3333))))
+      dgnew = dgnew / 100.0   ! convert units
+      dinew = dgnew
+      
+      dsnew = (dsnew*snow_1d + dgnew*graupel_1d + dinew*ice_1d) /      &
+              (snow_1d + graupel_1d + ice_1d)
 
 !  --- ...  adjustment of snow density depending on new snowfall
 

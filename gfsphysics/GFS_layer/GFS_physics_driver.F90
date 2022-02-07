@@ -1822,6 +1822,8 @@ module module_physics_driver
             Radtend%sfalb, flag_iter, flag_guess, Model%lheatstrg,       &
             Model%isot, Model%ivegsrc,                                   &
             bexp1d, xlai1d, vegf1d, Model%pertvegf,                      &
+            Sfcprop%drainncprv, Sfcprop%draincprv, Sfcprop%dsnowprv,   &
+            Sfcprop%dgraupelprv, Sfcprop%diceprv,                      &
 !  ---  input/output:
             weasd3(:,1), snowd3(:,1), tsfc3(:,1), tprcp3(:,1),           &
             Sfcprop%srflag, smsoil, stsoil, slsoil, Sfcprop%canopy,      &
@@ -5246,7 +5248,7 @@ module module_physics_driver
       
 !  ---  get the amount of different precip type for Noah MP
 !  ---  convert from m/dtp to mm/s
-      if (Model%lsm==Model%lsm_noahmp) then
+      if (Model%lsm==Model%lsm_noahmp .or. Model%lsm==Model%lsm_noah) then
         if (Model%imp_physics == Model%imp_physics_mg .or. &
             Model%imp_physics == Model%imp_physics_gfdl) then
           !GJF: Should all precipitation rates have the same denominator below? 

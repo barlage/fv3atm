@@ -145,6 +145,8 @@
      &       shdmin, shdmax, snoalb, sfalb, flag_iter, flag_guess,      &
      &       lheatstrg, isot, ivegsrc,                                  &
      &       bexppert, xlaipert, vegfpert,pertvegf,                     &  ! sfc perts, mgehne
+     &       rainnc_mp, rainc_mp, snow_mp,                              &
+     &       graupel_mp, ice_mp,                                        &
 !  ---  in/outs:
      &       weasd, snwdph, tskin, tprcp, srflag, smc, stc, slc,        &
      &       canopy, trans, tsurf, zorl,                                &
@@ -190,6 +192,10 @@
      &       snoalb, sfalb, zf,
      &       bexppert, xlaipert, vegfpert
 
+      real (kind=kind_phys), dimension(im), intent(in) ::               &
+     &       rainnc_in, rainc_in, snow_in,                              &
+     &       graupel_in, ice_in                                         &
+
       real (kind=kind_phys),  intent(in) :: delt
 
       logical, dimension(im), intent(in) :: flag_iter, flag_guess, land
@@ -230,6 +236,9 @@
      &       snomlt, sncovr, soilw, soilm, ssoil, tsea, th2, tbot,      &
      &       xlai, zlvl, swdn, tem, z0, bexpp, xlaip, vegfp,            &
      &       mv,sv,alphav,betav,vegftmp
+
+      real (kind=kind_phys) :: rainnc_1d, rainc_1d, snow_1d,            &                           &
+     &       graupel_1d, ice_1d, liquid_precip                          &
 
       integer :: couple, ice, nsoil, nroot, slope, stype, vtype
       integer :: i, k, iflag
@@ -320,6 +329,17 @@
 !            ffrozp = 0.0
 !          endif
           ffrozp = srflag(i)
+
+          rainnc_1d   = rainnc_mp(i)
+          rainc_1d    = rainc_mp(i)
+          snow_1d     = snow_mp(i)
+          graupel_1d  = graupel_mp(i)
+          ice_1d      = ice_mp(i)
+          ffrozp = (snow_1d + graupel_1d + ice_1d) / 
+                     (rainnc_1d + snow_1d + graupel_1d + ice_1d)
+          liquid_precip = rainnc_1d + (1.0 - ffrozp) * rainc_1d
+          snow_1d = snow_1d + ffrozp * rainc_1d
+
           ice = 0
 
           zlvl = zf(i)
@@ -451,6 +471,7 @@
      &       vtype, stype, slope, shdmin1d, alb, snoalb1d,              &
      &       bexpp, xlaip,                                              & ! sfc-perts, mgehne
      &       lheatstrg,                                                 &
+     &       liquid_precip, snow_1d, graupel_1d, ice_1d,                &
 !  ---  input/outputs:
      &       tbot, cmc, tsea, stsoil, smsoil, slsoil, sneqv, chx, cmx,  &
      &       z0,                                                        &
